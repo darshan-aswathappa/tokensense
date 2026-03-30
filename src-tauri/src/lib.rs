@@ -8,6 +8,7 @@
 ///   poller     — background JS-injection polling loop
 
 pub mod auth;
+pub mod codex;
 pub mod commands;
 pub mod keychain;
 pub mod models;
@@ -23,7 +24,8 @@ use tauri::{
 };
 
 use commands::{
-    disconnect, get_usage, is_connected, open_login_window, retry_connect, update_usage_from_js,
+    disconnect, get_usage, is_connected, open_login_window, read_codex_session, retry_connect,
+    update_usage_from_js,
 };
 
 // ---------------------------------------------------------------------------
@@ -60,6 +62,7 @@ pub fn run() {
             disconnect,
             update_usage_from_js,
             retry_connect,
+            read_codex_session,
         ])
         .setup(|app| {
             // Hide from Dock — this is a menu-bar-only app.

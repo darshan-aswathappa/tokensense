@@ -24,6 +24,7 @@ const makeOrg = (
     weekly_tokens_limit: weeklyLimit,
     session_reset_at: sessionResetAt ?? null,
     weekly_reset_at: weeklyResetAt ?? null,
+    extra_usage_active: false,
   },
   error: null,
 });
@@ -107,6 +108,7 @@ describe("UsagePanel", () => {
         weekly_tokens_limit: 0,
         session_reset_at: null,
         weekly_reset_at: null,
+        extra_usage_active: false,
       },
       error: null,
     }];

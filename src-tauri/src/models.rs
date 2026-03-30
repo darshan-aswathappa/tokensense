@@ -17,6 +17,7 @@ pub struct UsageData {
     pub weekly_tokens_limit: u64,
     pub session_reset_at: Option<String>,
     pub weekly_reset_at: Option<String>,
+    pub extra_usage_active: bool,
 }
 
 impl UsageData {
@@ -56,6 +57,7 @@ mod tests {
             weekly_tokens_limit: weekly_limit,
             session_reset_at: None,
             weekly_reset_at: None,
+            extra_usage_active: false,
         }
     }
 

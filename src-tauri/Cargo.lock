@@ -4422,6 +4422,7 @@ name = "tokensense"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "dirs",
  "keyring",
  "reqwest 0.12.28",
  "serde",
@@ -4430,6 +4431,7 @@ dependencies = [
  "tauri-build",
  "tauri-plugin-opener",
  "tauri-plugin-shell",
+ "tempfile",
  "tokio",
 ]
 

@@ -109,6 +109,7 @@
 .panel {
   padding: 12px 15px 12px;
   overflow: hidden !important;
+  max-height: 100%;
 }
 
 .panel__head {
@@ -170,6 +171,20 @@
   font-size: 11px;
   color: var(--red);
   opacity: .75;
+}
+
+.org__extra {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--amber);
+  border: 1px solid var(--amber);
+  border-radius: 3px;
+  padding: 2px 6px;
+  margin-bottom: 8px;
+  opacity: .85;
 }
 
 /* ── Bar ── */
@@ -251,3 +266,44 @@
 }
 
 .empty__retry:hover { color: var(--fg); border-color: var(--dim); }
+
+/* ── Codex ── */
+
+.codex__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 12px;
+  margin-bottom: 8px;
+}
+
+.codex__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.codex__stat-label {
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--mute);
+}
+
+.codex__stat-value {
+  font-size: 16px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -.03em;
+  color: var(--fg);
+  line-height: 1;
+}
+
+.codex__err {
+  display: block;
+  font-size: 11px;
+  color: var(--red);
+  opacity: .75;
+  margin-bottom: 12px;
+  text-align: center;
+}

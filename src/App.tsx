@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
+import { CodexPanel } from "./components/CodexPanel";
 import { LoginPrompt } from "./components/LoginPrompt";
 import { UsagePanel } from "./components/UsagePanel";
 import type { OrgUsage } from "./types";
@@ -97,9 +98,7 @@ function App() {
           </>
         )}
 
-        {activeTab === "codex" && (
-          <LoginPrompt provider="codex" />
-        )}
+        {activeTab === "codex" && <CodexPanel />}
       </div>
     </div>
   );

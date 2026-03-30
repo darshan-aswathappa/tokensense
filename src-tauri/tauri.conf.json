@@ -16,7 +16,7 @@
         "label": "main",
         "title": "TokenSense",
         "width": 380,
-        "height": 340,
+        "height": 370,
         "visible": false,
         "decorations": false,
         "transparent": true,

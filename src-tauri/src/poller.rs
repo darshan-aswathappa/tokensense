@@ -218,21 +218,29 @@ pub fn handle_js_result(app: &AppHandle, raw_json: &str) {
 fn parse_usage_data(v: &serde_json::Value) -> Result<crate::models::UsageData, String> {
     /// Extracts `(utilization_percent, resets_at)` from a nullable window object.
     /// Returns `None` if the window is absent or null.
+    /// Uses `as_f64` to handle both integer and float utilization values from the API.
     fn window(v: &serde_json::Value, key: &str) -> Option<(u64, Option<String>)> {
         let w = v.get(key)?;
         if w.is_null() { return None; }
-        let util = w.get("utilization").and_then(|u| u.as_u64())?;
+        let util = w.get("utilization")
+            .and_then(|u| u.as_f64())
+            .map(|f| f.round() as u64)?;
         let reset = w.get("resets_at").and_then(|r| r.as_str()).map(String::from);
         Some((util, reset))
     }
+
+    // Detect extra_usage: present and non-null means user is on extra credits.
+    let extra_usage_active = v.get("extra_usage")
+        .map(|e| !e.is_null())
+        .unwrap_or(false);
 
     // Session → five_hour window; fallback to extra_usage monthly credits.
     let (sess_used, sess_limit, sess_reset) = match window(v, "five_hour") {
         Some((util, reset)) => (util, 100u64, reset),
         None => {
-            if let Some(extra) = v.get("extra_usage") {
-                let used  = extra.get("used_credits").and_then(|u| u.as_u64()).unwrap_or(0);
-                let limit = extra.get("monthly_limit").and_then(|l| l.as_u64()).unwrap_or(0);
+            if let Some(extra) = v.get("extra_usage").filter(|e| !e.is_null()) {
+                let used  = extra.get("used_credits").and_then(|u| u.as_f64()).map(|f| f.round() as u64).unwrap_or(0);
+                let limit = extra.get("monthly_limit").and_then(|l| l.as_f64()).map(|f| f.round() as u64).unwrap_or(0);
                 (used, limit, None)
             } else {
                 (0, 0, None)
@@ -253,5 +261,6 @@ fn parse_usage_data(v: &serde_json::Value) -> Result<crate::models::UsageData, S
         weekly_tokens_limit:  week_limit,
         session_reset_at:     sess_reset,
         weekly_reset_at:      week_reset,
+        extra_usage_active,
     })
 }

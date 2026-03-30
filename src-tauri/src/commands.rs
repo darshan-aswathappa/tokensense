@@ -102,6 +102,12 @@ pub async fn update_usage_from_js(
     Ok(())
 }
 
+/// Reads the most recent Codex session for today from local files.
+#[tauri::command]
+pub async fn read_codex_session() -> Result<crate::codex::CodexReadResult, String> {
+    Ok(crate::codex::read_today_session())
+}
+
 /// Shows the login window (or opens a fresh one) so the user can retry.
 /// The login window's initialization script will restart its detection loop
 /// on the next page load, or the existing setInterval will fire within 5 min.
@@ -138,6 +144,7 @@ mod tests {
                 weekly_tokens_limit: 1_000_000,
                 session_reset_at: None,
                 weekly_reset_at: None,
+                extra_usage_active: false,
             }),
             error: None,
         }

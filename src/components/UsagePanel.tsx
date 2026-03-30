@@ -45,6 +45,9 @@ export function UsagePanel({ orgs, lastUpdated }: Props) {
             <span className="org__err">{org.error}</span>
           ) : org.usage ? (
             <>
+              {org.usage.extra_usage_active && (
+                <span className="org__extra">Extra usage</span>
+              )}
               {org.usage.session_tokens_limit > 0 && (
                 <UsageBar
                   label="5-hour"
