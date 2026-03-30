@@ -7,7 +7,7 @@
   --green: hsl(145,62%,50%);
   --amber: #ff8c00;
   --red:   hsl(0,82%,62%);
-  --font:  "JetBrains Mono", "Menlo", ui-monospace, monospace;
+  --font:  'JetBrains Mono', monospace;
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
   --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
   --over:  rgba(245,245,247,.78);
