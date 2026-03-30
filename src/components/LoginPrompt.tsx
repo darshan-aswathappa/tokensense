@@ -25,7 +25,6 @@ export function LoginPrompt({ provider }: Props) {
       setIsOpening(true);
       void Promise.resolve(invoke("open_login_window")).finally(() => setIsOpening(false));
     }
-    // codex login will be wired later
   };
 
   return (

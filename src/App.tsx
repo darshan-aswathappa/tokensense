@@ -41,26 +41,35 @@ function App() {
     <div className="app">
       <header className="tabs" role="tablist">
         <button
+          id="tab-claude"
           className={`tabs__btn ${activeTab === "claude" ? "tabs__btn--active" : ""}`}
           onClick={() => setActiveTab("claude")}
           type="button"
           role="tab"
           aria-selected={activeTab === "claude"}
+          aria-controls="panel-claude"
         >
           Claude
         </button>
         <button
+          id="tab-codex"
           className={`tabs__btn ${activeTab === "codex" ? "tabs__btn--active" : ""}`}
           onClick={() => setActiveTab("codex")}
           type="button"
           role="tab"
           aria-selected={activeTab === "codex"}
+          aria-controls="panel-codex"
         >
           Codex
         </button>
       </header>
 
-      <div className="tabs__content">
+      <div
+        className="tabs__content"
+        role="tabpanel"
+        id={activeTab === "claude" ? "panel-claude" : "panel-codex"}
+        aria-labelledby={activeTab === "claude" ? "tab-claude" : "tab-codex"}
+      >
         {activeTab === "claude" && (
           <>
             {!claudeConnected ? (

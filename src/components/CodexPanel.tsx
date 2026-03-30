@@ -74,7 +74,7 @@ export function CodexPanel() {
 
   useEffect(() => {
     loadSession();
-  }, []);
+  }, [loadSession]);
 
   if (state === "loading") {
     return (
