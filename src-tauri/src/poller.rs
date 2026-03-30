@@ -229,9 +229,11 @@ fn parse_usage_data(v: &serde_json::Value) -> Result<crate::models::UsageData, S
         Some((util, reset))
     }
 
-    // Detect extra_usage: present and non-null means user is on extra credits.
+    // Detect extra_usage: present, non-null, AND is_enabled=true.
     let extra_usage_active = v.get("extra_usage")
-        .map(|e| !e.is_null())
+        .filter(|e| !e.is_null())
+        .and_then(|e| e.get("is_enabled"))
+        .and_then(|b| b.as_bool())
         .unwrap_or(false);
 
     // Session → five_hour window; fallback to extra_usage monthly credits.

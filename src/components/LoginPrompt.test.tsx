@@ -9,28 +9,30 @@ describe("LoginPrompt", () => {
     vi.clearAllMocks();
   });
 
-  it("renders the connect button", () => {
-    render(<LoginPrompt />);
+  it("renders the sign in button for claude", () => {
+    render(<LoginPrompt provider="claude" />);
     expect(
-      screen.getByRole("button", { name: /connect claude account/i })
+      screen.getByRole("button", { name: /sign in with claude/i })
     ).toBeInTheDocument();
   });
 
-  it("renders descriptive subtitle text", () => {
-    render(<LoginPrompt />);
-    expect(screen.getByText(/opens claude\.ai to sign in/i)).toBeInTheDocument();
+  it("renders descriptive text for claude", () => {
+    render(<LoginPrompt provider="claude" />);
+    expect(screen.getByText(/sign in to see real-time token usage/i)).toBeInTheDocument();
   });
 
-  it("renders monitor description text", () => {
-    render(<LoginPrompt />);
-    expect(screen.getByText(/monitor your claude usage/i)).toBeInTheDocument();
+  it("renders the sign in button for codex as disabled", () => {
+    render(<LoginPrompt provider="codex" />);
+    expect(
+      screen.getByRole("button", { name: /sign in with codex/i })
+    ).toBeDisabled();
   });
 
-  it("calls invoke with open_login_window when button is clicked", async () => {
+  it("calls invoke with open_login_window when claude button is clicked", async () => {
     const user = userEvent.setup();
-    render(<LoginPrompt />);
+    render(<LoginPrompt provider="claude" />);
 
-    const button = screen.getByRole("button", { name: /connect claude account/i });
+    const button = screen.getByRole("button", { name: /sign in with claude/i });
     await user.click(button);
 
     expect(invoke).toHaveBeenCalledWith("open_login_window");
@@ -38,17 +40,12 @@ describe("LoginPrompt", () => {
 
   it("calls invoke exactly once per click", async () => {
     const user = userEvent.setup();
-    render(<LoginPrompt />);
+    render(<LoginPrompt provider="claude" />);
 
-    const button = screen.getByRole("button", { name: /connect claude account/i });
+    const button = screen.getByRole("button", { name: /sign in with claude/i });
     await user.click(button);
     await user.click(button);
 
     expect(invoke).toHaveBeenCalledTimes(2);
-  });
-
-  it("renders an icon or visual element for the Claude logo area", () => {
-    const { container } = render(<LoginPrompt />);
-    expect(container.querySelector(".login-prompt__icon")).toBeInTheDocument();
   });
 });

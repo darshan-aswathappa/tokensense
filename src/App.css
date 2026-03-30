@@ -1,13 +1,15 @@
 :root {
-  --bg:    #0e0e0e;
+  --bg:    #0a0a0a;
   --fg:    #f5f5f7;
   --dim:   rgba(245,245,247,.45);
   --mute:  rgba(245,245,247,.55);
   --rule:  rgba(245,245,247,.07);
   --green: hsl(145,62%,50%);
-  --amber: hsl(37,92%,57%);
+  --amber: #ff8c00;
   --red:   hsl(0,82%,62%);
-  --font:  -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+  --font:  "Menlo", ui-monospace, monospace;
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo:  cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ── Shell ── */
@@ -21,7 +23,7 @@
   border-radius: 16px;
   font-family: var(--font);
   color: var(--fg);
-  overflow: hidden !important;
+  overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -58,7 +60,7 @@
 
 .tabs__content {
   flex: 1;
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 /* ── Login ── */
@@ -68,6 +70,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  animation: fade-up 280ms var(--ease-out-quart) both;
 }
 
 .login__desc {
@@ -84,7 +87,7 @@
   background: var(--fg);
   color: var(--bg);
   border: none;
-  border-radius: 8px;
+  border-radius: 2px;
   font-family: var(--font);
   font-size: 13px;
   font-weight: 600;
@@ -97,34 +100,13 @@
 .login__btn:active:not(:disabled) { opacity: .70; }
 .login__btn:disabled { opacity: .35; cursor: default; }
 
-.login__hint {
-  margin-top: 10px;
-  font-size: 11px;
-  color: var(--mute);
-  font-style: italic;
-}
-
 /* ── Panel ── */
 
 .panel {
   padding: 12px 15px 12px;
-  overflow: hidden !important;
+  overflow: hidden;
   max-height: 100%;
-}
-
-.panel__head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.panel__title {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: .10em;
-  text-transform: uppercase;
-  color: var(--mute);
+  animation: fade-up 280ms var(--ease-out-quart) both;
 }
 
 .panel__foot {
@@ -152,6 +134,8 @@
 
 .org {
   margin-bottom: 10px;
+  animation: fade-up 240ms var(--ease-out-quart) both;
+  animation-delay: calc(var(--i, 0) * 55ms + 40ms);
 }
 
 .org:last-of-type { margin-bottom: 0; }
@@ -164,6 +148,9 @@
   text-transform: uppercase;
   color: var(--mute);
   margin-bottom: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .org__err {
@@ -171,6 +158,9 @@
   font-size: 11px;
   color: var(--red);
   opacity: .75;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .org__extra {
@@ -181,10 +171,9 @@
   text-transform: uppercase;
   color: var(--amber);
   border: 1px solid var(--amber);
-  border-radius: 3px;
+  border-radius: 2px;
   padding: 2px 6px;
   margin-bottom: 8px;
-  opacity: .85;
 }
 
 /* ── Bar ── */
@@ -207,6 +196,10 @@
   font-weight: 500;
   color: var(--dim);
   letter-spacing: -.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .bar__value {
@@ -217,18 +210,20 @@
   line-height: 1;
 }
 
-.bar__segs {
-  display: flex;
-  gap: 2px;
-  align-items: center;
-  height: 14px;
+.bar__track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.07);
+  border-radius: 2px;
+  overflow: hidden;
 }
 
-.bar__seg {
-  flex: 1;
-  min-width: 0;
-  border-radius: 2px;
-  transition: height .4s cubic-bezier(.4,0,.2,1), background .4s ease;
+.bar__fill {
+  height: 100%;
+  transform-origin: left center;
+  transition: width .4s cubic-bezier(.4,0,.2,1);
+  animation: bar-enter 550ms var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 70ms + 100ms);
 }
 
 .bar__meta {
@@ -244,6 +239,7 @@
 .empty {
   padding: 38px 22px;
   text-align: center;
+  animation: fade-up 240ms var(--ease-out-quart) both;
 }
 
 .empty__text {
@@ -256,7 +252,7 @@
 .empty__retry {
   background: none;
   border: 1px solid var(--rule);
-  border-radius: 7px;
+  border-radius: 2px;
   font-family: var(--font);
   font-size: 11px;
   color: var(--dim);
@@ -280,6 +276,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  animation: fade-up 200ms var(--ease-out-quart) both;
+  animation-delay: calc(var(--i, 0) * 35ms + 150ms);
 }
 
 .codex__stat-label {
@@ -306,4 +304,73 @@
   opacity: .75;
   margin-bottom: 12px;
   text-align: center;
+}
+
+/* ── Keyframes ── */
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bar-enter {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes cursor-blink {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0; }
+}
+
+@keyframes pulse-loading {
+  0%, 100% { opacity: 0.55; }
+  50%      { opacity: 0.30; }
+}
+
+/* ── Loading cursor ── */
+
+.empty--loading .empty__text::after {
+  content: '\25ae';
+  display: inline-block;
+  margin-left: 3px;
+  animation: cursor-blink 900ms step-start infinite;
+}
+
+/* ── Button loading state ── */
+
+.login__btn--loading {
+  animation: pulse-loading 1.2s ease-in-out infinite;
+}
+
+/* ── Focus ── */
+
+.tabs__btn:focus-visible,
+.login__btn:focus-visible,
+.panel__disconnect:focus-visible,
+.empty__retry:focus-visible {
+  outline: 2px solid var(--amber);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+/* ── Motion ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .login,
+  .empty,
+  .org,
+  .codex__stat,
+  .bar__fill,
+  .tabs__btn,
+  .login__btn,
+  .panel__disconnect,
+  .empty__retry {
+    animation: none !important;
+    transition: none;
+  }
+
+  .empty--loading .empty__text::after { animation: none !important; }
+  .login__btn--loading { animation: none !important; }
 }

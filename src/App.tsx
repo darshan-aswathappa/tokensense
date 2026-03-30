@@ -15,8 +15,6 @@ function App() {
   // Claude state
   const [claudeConnected, setClaudeConnected] = useState(false);
   const [claudeOrgs, setClaudeOrgs] = useState<OrgUsage[]>([]);
-  const [claudeLastUpdated, setClaudeLastUpdated] = useState<Date | null>(null);
-
   useEffect(() => {
     invoke<boolean>("is_connected")
       .then(setClaudeConnected)
@@ -27,27 +25,9 @@ function App() {
     });
 
     const unlistenUsage = listen<OrgUsage[]>("usage-updated", (e) => {
-      const now = new Date();
       if (Array.isArray(e.payload)) {
-        console.log(`[poll] ${now.toISOString()} — received ${e.payload.length} org(s)`);
-        e.payload.forEach((org) => {
-          const u = org.usage;
-          if (u) {
-            console.log(
-              `[poll]   ${org.org_name} | 5h: ${u.session_tokens_used}/${u.session_tokens_limit}` +
-              (u.session_reset_at ? ` (resets ${u.session_reset_at})` : "") +
-              ` | 7d: ${u.weekly_tokens_used}/${u.weekly_tokens_limit}` +
-              (u.weekly_reset_at ? ` (resets ${u.weekly_reset_at})` : "")
-            );
-          } else if (org.error) {
-            console.warn(`[poll]   ${org.org_name} — error: ${org.error}`);
-          }
-        });
         setClaudeOrgs(e.payload);
-        setClaudeLastUpdated(now);
         setClaudeConnected(true);
-      } else {
-        console.warn(`[poll] ${now.toISOString()} — unexpected payload:`, e.payload);
       }
     });
 
@@ -59,11 +39,13 @@ function App() {
 
   return (
     <div className="app">
-      <header className="tabs">
+      <header className="tabs" role="tablist">
         <button
           className={`tabs__btn ${activeTab === "claude" ? "tabs__btn--active" : ""}`}
           onClick={() => setActiveTab("claude")}
           type="button"
+          role="tab"
+          aria-selected={activeTab === "claude"}
         >
           Claude
         </button>
@@ -71,6 +53,8 @@ function App() {
           className={`tabs__btn ${activeTab === "codex" ? "tabs__btn--active" : ""}`}
           onClick={() => setActiveTab("codex")}
           type="button"
+          role="tab"
+          aria-selected={activeTab === "codex"}
         >
           Codex
         </button>
@@ -82,13 +66,13 @@ function App() {
             {!claudeConnected ? (
               <LoginPrompt provider="claude" />
             ) : claudeOrgs.length > 0 ? (
-              <UsagePanel orgs={claudeOrgs} lastUpdated={claudeLastUpdated} />
+              <UsagePanel orgs={claudeOrgs} />
             ) : (
-              <div className="empty">
-                <span className="empty__text">Waiting for data</span>
+              <div className="empty empty--loading">
+                <span className="empty__text">Fetching usage</span>
                 <button
                   className="empty__retry"
-                  onClick={() => invoke("retry_connect")}
+                  onClick={() => invoke("retry_connect").catch(() => {})}
                   type="button"
                 >
                   Retry

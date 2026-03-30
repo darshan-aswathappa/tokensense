@@ -1,10 +1,11 @@
+import type React from "react";
+import { memo, useCallback } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { UsageBar } from "./UsageBar";
 import type { OrgUsage } from "../types";
 
 interface Props {
   orgs: OrgUsage[];
-  lastUpdated: Date | null;
 }
 
 function pct(used: number, limit: number): number {
@@ -16,9 +17,11 @@ function orgLabel(name: string): string {
   return m ? "Personal" : name;
 }
 
-function relativeReset(iso: string): string {
-  const ms = new Date(iso).getTime() - Date.now();
-  if (ms <= 0) return "resetting";
+function relativeReset(iso: string): string | null {
+  const t = new Date(iso).getTime();
+  if (Number.isNaN(t)) return null;
+  const ms = t - Date.now();
+  if (ms <= 0) return "now";
   const m = Math.floor(ms / 60_000);
   if (m < 60) return `${m}m`;
   const h = Math.floor(m / 60);
@@ -26,19 +29,17 @@ function relativeReset(iso: string): string {
   return `${Math.floor(h / 24)}d`;
 }
 
-function relativeUpdate(d: Date | null): string {
-  if (!d) return "";
-  const s = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (s < 60) return "just now";
-  const m = Math.floor(s / 60);
-  return m < 60 ? `${m}m ago` : `${Math.floor(m / 60)}h ago`;
-}
+export const UsagePanel = memo(function UsagePanel({ orgs }: Props) {
+  const disconnect = useCallback(() => invoke("disconnect"), []);
 
-export function UsagePanel({ orgs, lastUpdated }: Props) {
   return (
     <div className="panel">
-      {orgs.map((org) => (
-        <section key={org.org_id} className="org">
+      {orgs.map((org, orgIdx) => (
+        <section
+          key={org.org_id}
+          className="org"
+          style={{ '--i': orgIdx } as React.CSSProperties}
+        >
           <span className="org__name">{orgLabel(org.org_name)}</span>
 
           {org.error ? (
@@ -53,6 +54,7 @@ export function UsagePanel({ orgs, lastUpdated }: Props) {
                   label="5-hour"
                   percent={pct(org.usage.session_tokens_used, org.usage.session_tokens_limit)}
                   resetAt={org.usage.session_reset_at ? relativeReset(org.usage.session_reset_at) : null}
+                  index={0}
                 />
               )}
               {org.usage.weekly_tokens_limit > 0 && (
@@ -60,6 +62,7 @@ export function UsagePanel({ orgs, lastUpdated }: Props) {
                   label="7-day"
                   percent={pct(org.usage.weekly_tokens_used, org.usage.weekly_tokens_limit)}
                   resetAt={org.usage.weekly_reset_at ? relativeReset(org.usage.weekly_reset_at) : null}
+                  index={1}
                 />
               )}
             </>
@@ -68,10 +71,10 @@ export function UsagePanel({ orgs, lastUpdated }: Props) {
       ))}
 
       <footer className="panel__foot">
-        <button className="panel__disconnect" onClick={() => invoke("disconnect")} type="button">
+        <button className="panel__disconnect" onClick={disconnect} type="button">
           Disconnect
         </button>
       </footer>
     </div>
   );
-}
+});

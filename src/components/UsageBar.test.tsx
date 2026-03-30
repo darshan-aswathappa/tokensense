@@ -19,56 +19,59 @@ describe("UsageBar", () => {
     expect(screen.getByText("100%")).toBeInTheDocument();
   });
 
-  it("applies green color class for low usage (below 60%)", () => {
+  it("applies green color for low usage (below 70%)", () => {
     const { container } = render(
       <UsageBar label="Session" percent={30} resetAt={null} />
     );
-    const fill = container.querySelector(".usage-bar__fill");
-    expect(fill).toHaveClass("usage-bar__fill--green");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+    // jsdom normalizes hsl(145,62%,50%) → rgb(48, 207, 114)
+    expect(fill?.style.background).toBe("rgb(48, 207, 114)");
   });
 
-  it("applies amber color class for medium usage (60-80%)", () => {
+  it("applies amber color for medium usage (70-89%)", () => {
     const { container } = render(
       <UsageBar label="Session" percent={70} resetAt={null} />
     );
-    const fill = container.querySelector(".usage-bar__fill");
-    expect(fill).toHaveClass("usage-bar__fill--amber");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+    // jsdom normalizes #ff8c00 → rgb(255, 140, 0)
+    expect(fill?.style.background).toBe("rgb(255, 140, 0)");
   });
 
-  it("applies red color class for high usage (above 80%)", () => {
+  it("applies red color for high usage (90%+)", () => {
     const { container } = render(
-      <UsageBar label="Session" percent={85} resetAt={null} />
+      <UsageBar label="Session" percent={92} resetAt={null} />
     );
-    const fill = container.querySelector(".usage-bar__fill");
-    expect(fill).toHaveClass("usage-bar__fill--red");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+    // jsdom normalizes hsl(0,82%,62%) → rgb(238, 79, 79)
+    expect(fill?.style.background).toBe("rgb(238, 79, 79)");
   });
 
-  it("applies amber at exactly 60%", () => {
+  it("applies amber at exactly 70%", () => {
     const { container } = render(
-      <UsageBar label="Session" percent={60} resetAt={null} />
+      <UsageBar label="Session" percent={70} resetAt={null} />
     );
-    const fill = container.querySelector(".usage-bar__fill");
-    expect(fill).toHaveClass("usage-bar__fill--amber");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+    expect(fill?.style.background).toBe("rgb(255, 140, 0)");
   });
 
-  it("applies red at exactly 80%", () => {
+  it("applies red at exactly 90%", () => {
     const { container } = render(
-      <UsageBar label="Session" percent={80} resetAt={null} />
+      <UsageBar label="Session" percent={90} resetAt={null} />
     );
-    const fill = container.querySelector(".usage-bar__fill");
-    expect(fill).toHaveClass("usage-bar__fill--red");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+    expect(fill?.style.background).toBe("rgb(238, 79, 79)");
   });
 
   it("shows reset time when resetAt is provided", () => {
-    render(<UsageBar label="Session" percent={45} resetAt="Resets in 3h 22m" />);
-    expect(screen.getByText("Resets in 3h 22m")).toBeInTheDocument();
+    render(<UsageBar label="Session" percent={45} resetAt="3h 22m" />);
+    expect(screen.getByText("resets 3h 22m")).toBeInTheDocument();
   });
 
   it("does not show reset time when resetAt is null", () => {
     const { container } = render(
       <UsageBar label="Session" percent={45} resetAt={null} />
     );
-    expect(container.querySelector(".usage-bar__reset")).toBeNull();
+    expect(container.querySelector(".bar__meta")).toBeNull();
   });
 
   it("has a progress bar element with correct aria attributes", () => {
@@ -84,7 +87,19 @@ describe("UsageBar", () => {
     const { container } = render(
       <UsageBar label="Session" percent={120} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".usage-bar__fill");
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
     expect(fill?.style.width).toBe("100%");
+  });
+
+  it("clamps displayed percentage to 100 for over-limit values", () => {
+    render(<UsageBar label="Session" percent={120} resetAt={null} />);
+    expect(screen.getByText("100%")).toBeInTheDocument();
+    expect(screen.queryByText("120%")).toBeNull();
+  });
+
+  it("clamps displayed percentage to 0 for negative values", () => {
+    render(<UsageBar label="Session" percent={-10} resetAt={null} />);
+    expect(screen.getByText("0%")).toBeInTheDocument();
+    expect(screen.queryByText("-10%")).toBeNull();
   });
 });

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 
 interface Props {
@@ -6,21 +7,23 @@ interface Props {
 
 const LABELS = {
   claude: {
-    desc: "Connect to monitor your Claude usage.",
+    desc: "Sign in to see real-time token usage across your Claude organizations.",
     btn: "Sign in with Claude",
   },
   codex: {
-    desc: "Connect to monitor your Codex usage.",
+    desc: "Coming soon.",
     btn: "Sign in with Codex",
   },
 };
 
 export function LoginPrompt({ provider }: Props) {
   const { desc, btn } = LABELS[provider];
+  const [isOpening, setIsOpening] = useState(false);
 
   const handleLogin = () => {
-    if (provider === "claude") {
-      invoke("open_login_window");
+    if (provider === "claude" && !isOpening) {
+      setIsOpening(true);
+      void Promise.resolve(invoke("open_login_window")).finally(() => setIsOpening(false));
     }
     // codex login will be wired later
   };
@@ -29,16 +32,13 @@ export function LoginPrompt({ provider }: Props) {
     <div className="login">
       <p className="login__desc">{desc}</p>
       <button
-        className="login__btn"
+        className={`login__btn${isOpening ? " login__btn--loading" : ""}`}
         onClick={handleLogin}
-        disabled={provider === "codex"}
+        disabled={provider === "codex" || isOpening}
         type="button"
       >
-        {btn}
+        {isOpening ? "Opening…" : btn}
       </button>
-      {provider === "codex" && (
-        <span className="login__hint">Coming soon</span>
-      )}
     </div>
   );
 }

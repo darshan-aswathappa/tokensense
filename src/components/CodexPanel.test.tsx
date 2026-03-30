@@ -66,7 +66,7 @@ describe("CodexPanel", () => {
     render(<CodexPanel />);
 
     expect(
-      await screen.findByText(/no recent sessions/i)
+      await screen.findByText(/no codex sessions found today/i)
     ).toBeInTheDocument();
   });
 

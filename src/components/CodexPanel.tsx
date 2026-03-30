@@ -1,20 +1,56 @@
-import { useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { UsageBar } from "./UsageBar";
 import type { CodexReadResult } from "../types";
 
-type State = "loading" | "loaded" | "no-session" | "error";
+function useCountUp(target: number, duration = 550): number {
+  const [value, setValue] = useState(0);
+  const rafRef = useRef<number>(0);
 
-function fmt(n: number): string {
-  return n.toLocaleString("en-US");
+  useEffect(() => {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setValue(target);
+      return;
+    }
+
+    setValue(0);
+    const start = performance.now();
+
+    const tick = (now: number) => {
+      const t = Math.min((now - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 4);
+      setValue(Math.round(target * eased));
+      if (t < 1) rafRef.current = requestAnimationFrame(tick);
+    };
+
+    rafRef.current = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafRef.current);
+  }, [target, duration]);
+
+  return value;
 }
+
+function StatValue({ n, index }: { n: number; index: number }) {
+  const value = useCountUp(n);
+  return (
+    <span
+      className="codex__stat-value"
+      style={{ '--i': index } as React.CSSProperties}
+    >
+      {value.toLocaleString("en-US")}
+    </span>
+  );
+}
+
+type State = "loading" | "loaded" | "no-session" | "error";
 
 export function CodexPanel() {
   const [state, setState] = useState<State>("loading");
   const [session, setSession] = useState<CodexReadResult["session"]>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const loadSession = async () => {
+  const loadSession = useCallback(async () => {
     setState("loading");
     setError(null);
 
@@ -34,7 +70,7 @@ export function CodexPanel() {
       setState("error");
       setError(err instanceof Error ? err.message : String(err));
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadSession();
@@ -42,8 +78,8 @@ export function CodexPanel() {
 
   if (state === "loading") {
     return (
-      <div className="empty">
-        <span className="empty__text">Reading sessions...</span>
+      <div className="empty empty--loading">
+        <span className="empty__text">Reading sessions</span>
       </div>
     );
   }
@@ -51,7 +87,7 @@ export function CodexPanel() {
   if (state === "no-session") {
     return (
       <div className="empty">
-        <span className="empty__text">No recent sessions found for today.</span>
+        <span className="empty__text">No Codex sessions found today.</span>
         <button className="empty__retry" onClick={loadSession} type="button" aria-label="Refresh">
           Refresh
         </button>
@@ -71,42 +107,44 @@ export function CodexPanel() {
   }
 
   // state === "loaded"
+  if (!session) return null;
+
   return (
     <div className="panel">
       <section className="org">
         <span className="org__name">
-          Latest Session{session?.plan_type ? ` \u00b7 ${session.plan_type}` : ""}
+          Latest Session{session.plan_type ? ` \u00b7 ${session.plan_type}` : ""}
         </span>
 
-        {session!.rate_limit_used_percent !== null && (
+        {session.rate_limit_used_percent !== null && (
           <UsageBar
             label="7-day"
-            percent={session!.rate_limit_used_percent}
+            percent={session.rate_limit_used_percent}
             resetAt={null}
           />
         )}
 
         <div className="codex__grid">
-          <div className="codex__stat">
+          <div className="codex__stat" style={{ '--i': 0 } as React.CSSProperties}>
             <span className="codex__stat-label">Total</span>
-            <span className="codex__stat-value">{fmt(session!.total_tokens)}</span>
+            <StatValue n={session.total_tokens} index={0} />
           </div>
-          <div className="codex__stat">
+          <div className="codex__stat" style={{ '--i': 1 } as React.CSSProperties}>
             <span className="codex__stat-label">Input</span>
-            <span className="codex__stat-value">{fmt(session!.input_tokens)}</span>
+            <StatValue n={session.input_tokens} index={1} />
           </div>
-          <div className="codex__stat">
+          <div className="codex__stat" style={{ '--i': 2 } as React.CSSProperties}>
             <span className="codex__stat-label">Output</span>
-            <span className="codex__stat-value">{fmt(session!.output_tokens)}</span>
+            <StatValue n={session.output_tokens} index={2} />
           </div>
-          <div className="codex__stat">
+          <div className="codex__stat" style={{ '--i': 3 } as React.CSSProperties}>
             <span className="codex__stat-label">Cached</span>
-            <span className="codex__stat-value">{fmt(session!.cached_input_tokens)}</span>
+            <StatValue n={session.cached_input_tokens} index={3} />
           </div>
-          {session!.reasoning_output_tokens > 0 && (
-            <div className="codex__stat">
+          {session.reasoning_output_tokens > 0 && (
+            <div className="codex__stat" style={{ '--i': 4 } as React.CSSProperties}>
               <span className="codex__stat-label">Reasoning</span>
-              <span className="codex__stat-value">{fmt(session!.reasoning_output_tokens)}</span>
+              <StatValue n={session.reasoning_output_tokens} index={4} />
             </div>
           )}
         </div>
