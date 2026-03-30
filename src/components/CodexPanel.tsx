@@ -125,7 +125,7 @@ export function CodexPanel() {
         )}
 
         <div className="codex__grid">
-          <div className="codex__stat" style={{ '--i': 0 } as React.CSSProperties}>
+          <div className="codex__stat codex__stat--featured" style={{ '--i': 0 } as React.CSSProperties}>
             <span className="codex__stat-label">Total</span>
             <StatValue n={session.total_tokens} index={0} />
           </div>

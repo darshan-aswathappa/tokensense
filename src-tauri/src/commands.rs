@@ -36,7 +36,9 @@ pub async fn is_connected(state: State<'_, Arc<AppState>>) -> Result<bool, Strin
     Ok(*lock)
 }
 
-/// Clears stored credentials from the keychain and resets connection state.
+/// Clears stored credentials from the keychain, resets connection state, and
+/// wipes the login webview's cookies/cache so the user can sign in with a
+/// different account on the next "Sign in" click.
 /// Emits `connection-changed: false` so the frontend switches back to LoginPrompt.
 #[tauri::command]
 pub async fn disconnect(
@@ -52,6 +54,14 @@ pub async fn disconnect(
     {
         let mut lock = state.orgs.lock().map_err(|e| format!("lock poisoned: {e}"))?;
         lock.clear();
+    }
+
+    // Clear the login webview's browsing data (cookies, cache, storage) so the
+    // next "Sign in" opens a fresh session — allowing a different account to log in.
+    // Then close the window so a new one is built from scratch next time.
+    if let Some(login_win) = app.get_webview_window("login") {
+        let _ = login_win.clear_all_browsing_data();
+        let _ = login_win.close();
     }
 
     let _ = app.emit("connection-changed", false);

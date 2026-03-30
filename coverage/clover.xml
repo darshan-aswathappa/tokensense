@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1774882032034" clover="3.2.0">
+  <project timestamp="1774882032034" name="All files">
+    <metrics statements="125" coveredstatements="123" conditionals="86" coveredconditionals="72" methods="26" coveredmethods="26" elements="237" coveredelements="221" complexity="0" loc="125" ncloc="125" packages="1" files="4" classes="4"/>
+    <file name="CodexPanel.tsx" path="/Users/darshanaswathappa/Desktop/usage-monitor/tokensense/src/components/CodexPanel.tsx">
+      <metrics statements="45" coveredstatements="43" conditionals="25" coveredconditionals="20" methods="8" coveredmethods="8"/>
+      <line num="8" count="429" type="stmt"/>
+      <line num="9" count="429" type="stmt"/>
+      <line num="11" count="429" type="stmt"/>
+      <line num="12" count="16" type="cond" truecount="1" falsecount="1"/>
+      <line num="13" count="0" type="stmt"/>
+      <line num="14" count="0" type="stmt"/>
+      <line num="17" count="16" type="stmt"/>
+      <line num="18" count="16" type="stmt"/>
+      <line num="20" count="16" type="stmt"/>
+      <line num="21" count="452" type="stmt"/>
+      <line num="22" count="452" type="stmt"/>
+      <line num="23" count="452" type="stmt"/>
+      <line num="24" count="452" type="cond" truecount="2" falsecount="0"/>
+      <line num="27" count="16" type="stmt"/>
+      <line num="28" count="16" type="stmt"/>
+      <line num="31" count="429" type="stmt"/>
+      <line num="35" count="429" type="stmt"/>
+      <line num="36" count="429" type="stmt"/>
+      <line num="49" count="16" type="stmt"/>
+      <line num="50" count="16" type="stmt"/>
+      <line num="51" count="16" type="stmt"/>
+      <line num="53" count="16" type="stmt"/>
+      <line num="54" count="9" type="stmt"/>
+      <line num="55" count="9" type="stmt"/>
+      <line num="57" count="9" type="stmt"/>
+      <line num="58" count="9" type="stmt"/>
+      <line num="60" count="7" type="cond" truecount="2" falsecount="0"/>
+      <line num="61" count="1" type="stmt"/>
+      <line num="62" count="1" type="stmt"/>
+      <line num="63" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="64" count="5" type="stmt"/>
+      <line num="65" count="5" type="stmt"/>
+      <line num="67" count="1" type="stmt"/>
+      <line num="70" count="1" type="stmt"/>
+      <line num="71" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="75" count="16" type="stmt"/>
+      <line num="76" count="8" type="stmt"/>
+      <line num="79" count="16" type="cond" truecount="2" falsecount="0"/>
+      <line num="80" count="9" type="stmt"/>
+      <line num="87" count="7" type="cond" truecount="2" falsecount="0"/>
+      <line num="88" count="1" type="stmt"/>
+      <line num="98" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="99" count="2" type="stmt"/>
+      <line num="110" count="4" type="cond" truecount="1" falsecount="1"/>
+      <line num="112" count="4" type="stmt"/>
+    </file>
+    <file name="LoginPrompt.tsx" path="/Users/darshanaswathappa/Desktop/usage-monitor/tokensense/src/components/LoginPrompt.tsx">
+      <metrics statements="10" coveredstatements="10" conditionals="10" coveredconditionals="9" methods="5" coveredmethods="5"/>
+      <line num="10" count="20" type="stmt"/>
+      <line num="24" count="11" type="stmt"/>
+      <line num="26" count="11" type="stmt"/>
+      <line num="27" count="3" type="cond" truecount="3" falsecount="1"/>
+      <line num="28" count="3" type="stmt"/>
+      <line num="29" count="3" type="stmt"/>
+      <line num="33" count="11" type="cond" truecount="2" falsecount="0"/>
+      <line num="34" count="1" type="stmt"/>
+      <line num="39" count="4" type="stmt"/>
+      <line num="50" count="10" type="stmt"/>
+    </file>
+    <file name="UsageBar.tsx" path="/Users/darshanaswathappa/Desktop/usage-monitor/tokensense/src/components/UsageBar.tsx">
+      <metrics statements="54" coveredstatements="54" conditionals="25" coveredconditionals="24" methods="7" coveredmethods="7"/>
+      <line num="11" count="99" type="cond" truecount="2" falsecount="0"/>
+      <line num="12" count="89" type="cond" truecount="2" falsecount="0"/>
+      <line num="13" count="62" type="stmt"/>
+      <line num="16" count="3" type="cond" truecount="1" falsecount="0"/>
+      <line num="17" count="91" type="stmt"/>
+      <line num="19" count="91" type="stmt"/>
+      <line num="20" count="91" type="stmt"/>
+      <line num="22" count="91" type="stmt"/>
+      <line num="23" count="91" type="stmt"/>
+      <line num="24" count="91" type="stmt"/>
+      <line num="27" count="91" type="stmt"/>
+      <line num="28" count="49" type="stmt"/>
+      <line num="31" count="91" type="stmt"/>
+      <line num="32" count="50" type="stmt"/>
+      <line num="33" count="50" type="stmt"/>
+      <line num="34" count="50" type="cond" truecount="3" falsecount="1"/>
+      <line num="37" count="50" type="stmt"/>
+      <line num="41" count="50" type="cond" truecount="2" falsecount="0"/>
+      <line num="44" count="50" type="cond" truecount="2" falsecount="0"/>
+      <line num="45" count="44" type="stmt"/>
+      <line num="46" count="44" type="stmt"/>
+      <line num="47" count="44" type="stmt"/>
+      <line num="48" count="44" type="stmt"/>
+      <line num="49" count="44" type="stmt"/>
+      <line num="52" count="6" type="stmt"/>
+      <line num="54" count="6" type="stmt"/>
+      <line num="55" count="6" type="stmt"/>
+      <line num="57" count="6" type="cond" truecount="2" falsecount="0"/>
+      <line num="58" count="50" type="stmt"/>
+      <line num="60" count="50" type="stmt"/>
+      <line num="63" count="50" type="stmt"/>
+      <line num="64" count="137" type="cond" truecount="2" falsecount="0"/>
+      <line num="65" count="137" type="stmt"/>
+      <line num="66" count="137" type="stmt"/>
+      <line num="69" count="137" type="stmt"/>
+      <line num="70" count="137" type="stmt"/>
+      <line num="71" count="137" type="stmt"/>
+      <line num="73" count="137" type="stmt"/>
+      <line num="74" count="137" type="stmt"/>
+      <line num="75" count="137" type="stmt"/>
+      <line num="77" count="137" type="cond" truecount="2" falsecount="0"/>
+      <line num="78" count="137" type="cond" truecount="2" falsecount="0"/>
+      <line num="79" count="134" type="stmt"/>
+      <line num="81" count="3" type="stmt"/>
+      <line num="82" count="3" type="stmt"/>
+      <line num="83" count="3" type="stmt"/>
+      <line num="87" count="50" type="cond" truecount="2" falsecount="0"/>
+      <line num="88" count="5" type="stmt"/>
+      <line num="89" count="2" type="stmt"/>
+      <line num="92" count="1" type="stmt"/>
+      <line num="95" count="6" type="stmt"/>
+      <line num="96" count="6" type="stmt"/>
+      <line num="97" count="6" type="stmt"/>
+      <line num="102" count="91" type="stmt"/>
+    </file>
+    <file name="UsagePanel.tsx" path="/Users/darshanaswathappa/Desktop/usage-monitor/tokensense/src/components/UsagePanel.tsx">
+      <metrics statements="16" coveredstatements="16" conditionals="26" coveredconditionals="19" methods="6" coveredmethods="6"/>
+      <line num="12" count="26" type="cond" truecount="1" falsecount="1"/>
+      <line num="16" count="15" type="stmt"/>
+      <line num="17" count="15" type="cond" truecount="1" falsecount="1"/>
+      <line num="21" count="18" type="stmt"/>
+      <line num="22" count="18" type="cond" truecount="1" falsecount="1"/>
+      <line num="23" count="18" type="stmt"/>
+      <line num="24" count="18" type="cond" truecount="1" falsecount="1"/>
+      <line num="25" count="18" type="stmt"/>
+      <line num="26" count="18" type="cond" truecount="1" falsecount="1"/>
+      <line num="27" count="18" type="stmt"/>
+      <line num="28" count="18" type="cond" truecount="2" falsecount="0"/>
+      <line num="29" count="9" type="stmt"/>
+      <line num="32" count="1" type="stmt"/>
+      <line num="33" count="13" type="stmt"/>
+      <line num="35" count="13" type="stmt"/>
+      <line num="38" count="15" type="stmt"/>
+    </file>
+  </project>
+</coverage>

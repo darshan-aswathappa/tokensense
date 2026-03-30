@@ -73,6 +73,13 @@ pub fn run() {
 
             setup_tray(app)?;
             poller::start_polling(app.handle().clone());
+
+            // Silently check for an existing claude.ai session so the user
+            // never sees the login prompt if their cookies are still valid.
+            if let Err(e) = auth::open_login_window_silent(app.handle()) {
+                eprintln!("[setup] silent auth window error: {e}");
+            }
+
             Ok(())
         })
         .run(tauri::generate_context!())

@@ -16,16 +16,17 @@ describe("LoginPrompt", () => {
     ).toBeInTheDocument();
   });
 
-  it("renders descriptive text for claude", () => {
+  it("renders ghost preview bars for claude", () => {
     render(<LoginPrompt provider="claude" />);
-    expect(screen.getByText(/sign in to see real-time token usage/i)).toBeInTheDocument();
+    expect(screen.getByText("5-hour")).toBeInTheDocument();
+    expect(screen.getByText("7-day")).toBeInTheDocument();
   });
 
-  it("renders the sign in button for codex as disabled", () => {
+  it("renders pending state for codex with no button", () => {
     render(<LoginPrompt provider="codex" />);
-    expect(
-      screen.getByRole("button", { name: /sign in with codex/i })
-    ).toBeDisabled();
+    expect(screen.getByText(/codex · pending/i)).toBeInTheDocument();
+    expect(screen.getByText(/session token tracking coming soon/i)).toBeInTheDocument();
+    expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 
   it("calls invoke with open_login_window when claude button is clicked", async () => {

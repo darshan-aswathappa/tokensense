@@ -1,5 +1,5 @@
-import { describe, it, expect } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { render, screen, act } from "@testing-library/react";
 import { UsageBar } from "./UsageBar";
 
 describe("UsageBar", () => {
@@ -23,43 +23,40 @@ describe("UsageBar", () => {
     const { container } = render(
       <UsageBar label="Session" percent={30} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".bar__fill");
-    // jsdom normalizes hsl(145,62%,50%) → rgb(48, 207, 114)
-    expect(fill?.style.background).toBe("rgb(48, 207, 114)");
+    const bar = container.querySelector<HTMLElement>(".bar");
+    expect(bar?.style.getPropertyValue("--bar-color")).toBe("hsl(145, 62%, 50%)");
   });
 
   it("applies amber color for medium usage (70-89%)", () => {
     const { container } = render(
       <UsageBar label="Session" percent={70} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".bar__fill");
-    // jsdom normalizes #ff8c00 → rgb(255, 140, 0)
-    expect(fill?.style.background).toBe("rgb(255, 140, 0)");
+    const bar = container.querySelector<HTMLElement>(".bar");
+    expect(bar?.style.getPropertyValue("--bar-color")).toBe("#ff8c00");
   });
 
   it("applies red color for high usage (90%+)", () => {
     const { container } = render(
       <UsageBar label="Session" percent={92} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".bar__fill");
-    // jsdom normalizes hsl(0,82%,62%) → rgb(238, 79, 79)
-    expect(fill?.style.background).toBe("rgb(238, 79, 79)");
+    const bar = container.querySelector<HTMLElement>(".bar");
+    expect(bar?.style.getPropertyValue("--bar-color")).toBe("hsl(0, 82%, 62%)");
   });
 
   it("applies amber at exactly 70%", () => {
     const { container } = render(
       <UsageBar label="Session" percent={70} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".bar__fill");
-    expect(fill?.style.background).toBe("rgb(255, 140, 0)");
+    const bar = container.querySelector<HTMLElement>(".bar");
+    expect(bar?.style.getPropertyValue("--bar-color")).toBe("#ff8c00");
   });
 
   it("applies red at exactly 90%", () => {
     const { container } = render(
       <UsageBar label="Session" percent={90} resetAt={null} />
     );
-    const fill = container.querySelector<HTMLElement>(".bar__fill");
-    expect(fill?.style.background).toBe("rgb(238, 79, 79)");
+    const bar = container.querySelector<HTMLElement>(".bar");
+    expect(bar?.style.getPropertyValue("--bar-color")).toBe("hsl(0, 82%, 62%)");
   });
 
   it("shows reset time when resetAt is provided", () => {
@@ -101,5 +98,81 @@ describe("UsageBar", () => {
     render(<UsageBar label="Session" percent={-10} resetAt={null} />);
     expect(screen.getByText("0%")).toBeInTheDocument();
     expect(screen.queryByText("-10%")).toBeNull();
+  });
+});
+
+describe("UsageBar animation path (matchMedia available)", () => {
+  let pendingTimeouts: (() => void)[] = [];
+  let cancelSpy: ReturnType<typeof vi.fn>;
+
+  beforeEach(() => {
+    pendingTimeouts = [];
+    cancelSpy = vi.fn();
+
+    let simTime = 0;
+    const rafQueue: FrameRequestCallback[] = [];
+    let rafRunning = false;
+
+    vi.stubGlobal("matchMedia", vi.fn().mockReturnValue({ matches: false }));
+    vi.stubGlobal("clearTimeout", vi.fn());
+    vi.stubGlobal("cancelAnimationFrame", cancelSpy);
+    vi.stubGlobal("setTimeout", (cb: () => void) => {
+      pendingTimeouts.push(cb);
+      return pendingTimeouts.length;
+    });
+    // Synchronous RAF: drains the queue to completion so animation settles inline
+    vi.stubGlobal("requestAnimationFrame", (cb: FrameRequestCallback) => {
+      rafQueue.push(cb);
+      if (!rafRunning) {
+        rafRunning = true;
+        while (rafQueue.length > 0) {
+          simTime += 16;
+          rafQueue.shift()!(simTime);
+        }
+        rafRunning = false;
+      }
+      return 1;
+    });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("queues a setTimeout delay on first render before starting RAF", () => {
+    render(<UsageBar label="Test" percent={50} resetAt={null} index={0} />);
+    // delay = 0 * 70 + 100 = 100ms → setTimeout called, RAF not yet called
+    expect(pendingTimeouts.length).toBe(1);
+  });
+
+  it("stagger delay increases with index prop", () => {
+    // delay = 2 * 70 + 100 = 240ms, but we just verify setTimeout was queued
+    render(<UsageBar label="Test" percent={50} resetAt={null} index={2} />);
+    expect(pendingTimeouts.length).toBe(1);
+  });
+
+  it("skips setTimeout and calls RAF directly on re-renders", () => {
+    const { rerender } = render(<UsageBar label="Test" percent={50} resetAt={null} />);
+    // flush initial delay so firstRender flag is reset
+    act(() => { pendingTimeouts.forEach(cb => cb()); pendingTimeouts = []; });
+
+    act(() => { rerender(<UsageBar label="Test" percent={75} resetAt={null} />); });
+    expect(pendingTimeouts.length).toBe(0); // no setTimeout on re-render
+  });
+
+  it("tick function animates and settles fill width at target", () => {
+    const { container } = render(<UsageBar label="Test" percent={50} resetAt={null} />);
+    const fill = container.querySelector<HTMLElement>(".bar__fill");
+
+    act(() => { pendingTimeouts.forEach(cb => cb()); pendingTimeouts = []; });
+
+    expect(fill?.style.width).toBe("50%");
+    expect(screen.getByText("50%")).toBeInTheDocument();
+  });
+
+  it("cancels animation frame during effect and on unmount", () => {
+    const { unmount } = render(<UsageBar label="Test" percent={50} resetAt={null} />);
+    unmount();
+    expect(cancelSpy).toHaveBeenCalled();
   });
 });

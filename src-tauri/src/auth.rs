@@ -77,12 +77,9 @@ const KEY_SESSION: &str = "session_key";
 const LOGIN_WINDOW_LABEL: &str = "login";
 
 /// Opens a new window pointing at https://claude.ai so the user can log in.
-/// The WKWebView underneath shares the default cookie jar with the main window,
-/// so cookies established during login are immediately available for JS
-/// evaluation in the main window.
+/// If the window already exists (e.g. started hidden for silent auth), shows
+/// and focuses it so the user can authenticate manually.
 pub fn open_login_window(app: &AppHandle) -> Result<(), String> {
-    // If the login window already exists just focus it rather than creating a
-    // duplicate.
     if let Some(existing) = app.get_webview_window(LOGIN_WINDOW_LABEL) {
         existing
             .show()
@@ -93,6 +90,20 @@ pub fn open_login_window(app: &AppHandle) -> Result<(), String> {
         return Ok(());
     }
 
+    build_login_window(app, true)
+}
+
+/// Opens the login window hidden so the auth-detection script can silently
+/// check for existing cookies on startup without interrupting the user.
+/// The window becomes visible only if the user explicitly clicks "Sign in".
+pub fn open_login_window_silent(app: &AppHandle) -> Result<(), String> {
+    if app.get_webview_window(LOGIN_WINDOW_LABEL).is_some() {
+        return Ok(()); // already running
+    }
+    build_login_window(app, false)
+}
+
+fn build_login_window(app: &AppHandle, visible: bool) -> Result<(), String> {
     WebviewWindowBuilder::new(
         app,
         LOGIN_WINDOW_LABEL,
@@ -100,9 +111,10 @@ pub fn open_login_window(app: &AppHandle) -> Result<(), String> {
             format!("failed to parse claude.ai URL: {e}")
         })?),
     )
-    .title("Login to Claude")
+    .title("Sign in to Claude")
     .inner_size(900.0, 700.0)
     .resizable(false)
+    .visible(visible)
     .initialization_script(LOGIN_DETECT_SCRIPT)
     .build()
     .map_err(|e| format!("failed to create login window: {e}"))?;
