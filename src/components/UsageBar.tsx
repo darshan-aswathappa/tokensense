@@ -8,9 +8,9 @@ interface UsageBarProps {
 }
 
 function resolvedBarColor(p: number): string {
-  if (p >= 90) return "hsl(0, 82%, 62%)";
-  if (p >= 70) return "#ff8c00";
-  return "hsl(145, 62%, 50%)";
+  if (p >= 90) return "#d45656";
+  if (p >= 70) return "#f59e0b";
+  return "#18E299";
 }
 
 export const UsageBar = memo(function UsageBar({ label, percent, resetAt, index = 0 }: UsageBarProps) {

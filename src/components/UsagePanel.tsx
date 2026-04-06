@@ -1,6 +1,5 @@
 import type React from "react";
-import { memo, useCallback } from "react";
-import { invoke } from "@tauri-apps/api/core";
+import { memo } from "react";
 import { UsageBar } from "./UsageBar";
 import type { OrgUsage } from "../types";
 
@@ -30,8 +29,6 @@ function relativeReset(iso: string): string | null {
 }
 
 export const UsagePanel = memo(function UsagePanel({ orgs }: Props) {
-  const disconnect = useCallback(() => invoke("disconnect"), []);
-
   return (
     <div className="panel">
       {orgs.map((org, orgIdx) => (
@@ -69,12 +66,6 @@ export const UsagePanel = memo(function UsagePanel({ orgs }: Props) {
           ) : null}
         </section>
       ))}
-
-      <footer className="panel__foot">
-        <button className="panel__disconnect" onClick={disconnect} type="button">
-          Disconnect
-        </button>
-      </footer>
     </div>
   );
 });
